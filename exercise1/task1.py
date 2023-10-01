@@ -3,7 +3,7 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 
 # Чтение данных из файла
-data = np.genfromtxt('task1_data.csv', delimiter=',')
+data = np.genfromtxt('data/task1_data.csv', delimiter=',')
 
 # Создание объекта PCA с 2 главными компонентами
 pca = PCA(n_components=2)
