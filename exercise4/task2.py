@@ -44,7 +44,7 @@ dummies = pd.get_dummies(x_test.select_dtypes(exclude=np.number), prefix=x_test.
 x_test[dummies.columns] = dummies
 x_test.drop(x_test.select_dtypes(exclude=np.number).columns, axis=1, inplace=True)
 
-lre = LogisticRegression(max_iter=1000)
+lre = LogisticRegression(max_iter=10000)
 lre.fit(x_train, y_train)
 y_pred = lre.predict(x_test)
 
