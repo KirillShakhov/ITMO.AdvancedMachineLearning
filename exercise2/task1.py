@@ -1,41 +1,40 @@
 import pandas as pd
-from scipy.spatial.distance import euclidean, cityblock
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 
-# Create a DataFrame with the provided data
+# Данные
 data = {
-    'id': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    'X': [66, 81, 76, 12, 94, 91, 52, 58, 11, 35],
-    'Y': [76, 94, 93, 51, 68, 20, 32, 61, 29, 92],
-    'Class': [1, 0, 1, 0, 1, 0, 0, 1, 0, 0]
+    'X': [22, 19, 11, 7, 13, 20, 8, 12, 15, 23],
+    'Y': [45, 42, 23, 23, 23, 39, 19, 21, 28, 65]
 }
 
+# Создаем DataFrame
 df = pd.DataFrame(data)
 
-# Coordinates of the new object
-new_object = (98, 88)
+# Вычисляем средние значения
+mean_X = df['X'].mean()
+mean_Y = df['Y'].mean()
 
-# Calculate distances using Euclidean metric
-df['Euclidean_Distance'] = df.apply(lambda row: euclidean((row['X'], row['Y']), new_object), axis=1)
+# Обучаем модель линейной регрессии
+model = LinearRegression()
+model.fit(df[['X']], df['Y'])
 
-# Identify the three nearest neighbors using Euclidean distance
-nearest_neighbors_euclidean = df.nsmallest(3, 'Euclidean_Distance')['id'].tolist()
+# Коэффициенты модели
+b1 = model.coef_[0]
+b0 = model.intercept_
 
-# Classify the new object using Euclidean distance with k=3
-class_euclidean = df.loc[df['id'].isin(nearest_neighbors_euclidean), 'Class'].mode()[0]
+# Прогнозируем значения
+predictions = model.predict(df[['X']])
 
-# Calculate distances using Manhattan (city block) metric
-df['Manhattan_Distance'] = df.apply(lambda row: cityblock((row['X'], row['Y']), new_object), axis=1)
+# Вычисляем R^2
+r2 = r2_score(df['Y'], predictions)
 
-# Identify the three nearest neighbors using Manhattan distance
-nearest_neighbors_manhattan = df.nsmallest(3, 'Manhattan_Distance')['id'].tolist()
+mean_X, mean_Y, round(b1, 2), round(b0, 2), round(r2, 2)
 
-# Classify the new object using Manhattan distance with k=3
-class_manhattan = df.loc[df['id'].isin(nearest_neighbors_manhattan), 'Class'].mode()[0]
-
-# Print the results
-print(f"Euclidean Distance to nearest neighbor: {df['Euclidean_Distance'].min()}")
-print(f"Identifiers of three nearest neighbors (Euclidean): {nearest_neighbors_euclidean}")
-print(f"Class of new object (k=3, Euclidean): {class_euclidean}")
-print(f"Manhattan (City Block) Distance to nearest neighbor: {df['Manhattan_Distance'].min()}")
-print(f"Identifiers of three nearest neighbors (Manhattan): {nearest_neighbors_manhattan}")
-print(f"Class of new object (k=3, Manhattan): {class_manhattan}")
+# Выводим результаты
+print(f'1. Выборочное среднее X: {mean_X}')
+print(f'2. Выборочное среднее Y: {mean_Y}')
+print(f'3. Коэффициент b1: {round(b1, 2)}')
+print(f'4. Коэффициент b0: {round(b0, 2)}')
+print(f'5. Статистика R^2: {round(r2, 2)}')
